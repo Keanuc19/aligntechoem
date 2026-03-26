@@ -1,16 +1,24 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "./supabase";
+import vehicleData from "./vehicle-data.json";
 
-// ─── Constants ───
-const COMMON_MAKES = [
-  "Acura","Audi","BMW","Buick","Cadillac","Chevrolet","Chrysler","Dodge",
-  "Fiat","Ford","Genesis","GMC","Honda","Hyundai","Infiniti","Jaguar",
-  "Jeep","Kia","Land Rover","Lexus","Lincoln","Mazda","Mercedes-Benz",
-  "Mini","Mitsubishi","Nissan","Porsche","Ram","Subaru","Tesla","Toyota",
-  "Volkswagen","Volvo"
-];
+// ─── Vehicle Database Lookups ───
+const ALL_MAKES = Object.keys(vehicleData).sort();
 
-const YEARS = Array.from({ length: 26 }, (_, i) => (2026 - i).toString());
+function getModels(make) {
+  if (!make || !vehicleData[make]) return [];
+  return Object.keys(vehicleData[make]).sort();
+}
+
+function getYears(make, model) {
+  if (!make || !model || !vehicleData[make]?.[model]) return [];
+  return Object.keys(vehicleData[make][model]).sort((a, b) => b - a);
+}
+
+function getTrims(make, model, year) {
+  if (!make || !model || !year || !vehicleData[make]?.[model]?.[year]) return [];
+  return vehicleData[make][model][year].map((t) => t.trim).sort();
+}
 
 const emptySpecData = () => ({
   front: {
@@ -512,7 +520,7 @@ export default function App() {
             </select>
             <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} style={{ ...inputStyle, width: "110px", background: "var(--c-surface)", cursor: "pointer" }}>
               <option value="">All Years</option>
-              {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
+              {[...new Set(specs.map(s => s.year))].filter(Boolean).sort((a, b) => b - a).map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
 
@@ -618,6 +626,41 @@ export default function App() {
 function FormView({ spec, setSpec, onSave, saving, onDelete, isNew }) {
   if (!spec) return null;
   const sd = spec.spec_data || emptySpecData();
+  const [manualEntry, setManualEntry] = useState(false);
+
+  // Check if current values are in the database (for editing existing specs)
+  const isInDB = spec.make && ALL_MAKES.includes(spec.make);
+
+  // Cascading dropdown options
+  const models = getModels(spec.make);
+  const years = getYears(spec.make, spec.model);
+  const trims = getTrims(spec.make, spec.model, spec.year);
+
+  const handleMakeChange = (value) => {
+    if (value === "__manual") {
+      setManualEntry(true);
+      setSpec({ ...spec, make: "", model: "", year: "", trim: "" });
+      return;
+    }
+    setManualEntry(false);
+    setSpec({ ...spec, make: value, model: "", year: "", trim: "" });
+  };
+
+  const handleModelChange = (value) => {
+    if (value === "__manual") {
+      setManualEntry(true);
+      return;
+    }
+    setSpec({ ...spec, model: value, year: "", trim: "" });
+  };
+
+  const handleYearChange = (value) => {
+    setSpec({ ...spec, year: value, trim: "" });
+  };
+
+  const handleTrimChange = (value) => {
+    setSpec({ ...spec, trim: value });
+  };
 
   const updateField = (field, value) => setSpec({ ...spec, [field]: value });
   const updateSpecData = (path, value) => {
@@ -629,44 +672,108 @@ function FormView({ spec, setSpec, onSave, saving, onDelete, isNew }) {
     setSpec({ ...spec, spec_data: newSD });
   };
 
+  const selectStyle = { ...inputStyle, cursor: "pointer" };
+  const disabledSelectStyle = { ...inputStyle, cursor: "not-allowed", opacity: 0.6 };
+
   return (
     <div className="animate-in" style={{ padding: "16px 20px 50px", overflow: "auto", flex: 1, maxWidth: "720px", margin: "0 auto", width: "100%" }}>
       <Section title="Vehicle Information" accent="var(--c-amber)">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-          <div>
-            <label style={labelStyle}>Year *</label>
-            <select value={spec.year} onChange={(e) => updateField("year", e.target.value)} style={{ ...inputStyle, cursor: "pointer" }}>
-              <option value="">Select Year</option>
-              {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
-          </div>
-          <div>
-            <label style={labelStyle}>Make *</label>
-            <select value={COMMON_MAKES.includes(spec.make) ? spec.make : spec.make ? "__custom" : ""}
-              onChange={(e) => updateField("make", e.target.value === "__custom" ? "" : e.target.value)}
-              style={{ ...inputStyle, cursor: "pointer" }}>
-              <option value="">Select Make</option>
-              {COMMON_MAKES.map((m) => <option key={m} value={m}>{m}</option>)}
-              <option value="__custom">— Other —</option>
-            </select>
-            {!COMMON_MAKES.includes(spec.make) && spec.make !== "" && (
-              <input type="text" value={spec.make} onChange={(e) => updateField("make", e.target.value)}
-                placeholder="Enter make..." style={{ ...inputStyle, marginTop: 6 }} autoFocus />
-            )}
-          </div>
+        {/* Manual entry toggle */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginBottom: 4 }}>
+          <button
+            onClick={() => {
+              setManualEntry(!manualEntry);
+              if (manualEntry) setSpec({ ...spec, make: "", model: "", year: "", trim: "" });
+            }}
+            style={{
+              background: "none", border: "1px solid var(--c-border)", borderRadius: "6px",
+              padding: "5px 10px", fontSize: "11px", fontWeight: 600, fontFamily: "inherit",
+              color: manualEntry ? "var(--c-amber)" : "var(--c-text-dim)",
+              cursor: "pointer", letterSpacing: "0.03em",
+            }}
+          >
+            {manualEntry ? "← Back to dropdowns" : "Vehicle not listed? Type manually"}
+          </button>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-          <div>
-            <label style={labelStyle}>Model *</label>
-            <input type="text" value={spec.model} onChange={(e) => updateField("model", e.target.value)}
-              placeholder="e.g. Camry, F-150" style={inputStyle} />
-          </div>
-          <div>
-            <label style={labelStyle}>Trim / Engine</label>
-            <input type="text" value={spec.trim} onChange={(e) => updateField("trim", e.target.value)}
-              placeholder="e.g. SE, 2.5L, AWD" style={inputStyle} />
-          </div>
-        </div>
+
+        {manualEntry ? (
+          /* ─── Manual entry mode ─── */
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div>
+                <label style={labelStyle}>Make *</label>
+                <input type="text" value={spec.make} onChange={(e) => updateField("make", e.target.value)}
+                  placeholder="e.g. Toyota" style={inputStyle} autoFocus />
+              </div>
+              <div>
+                <label style={labelStyle}>Model *</label>
+                <input type="text" value={spec.model} onChange={(e) => updateField("model", e.target.value)}
+                  placeholder="e.g. Camry" style={inputStyle} />
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div>
+                <label style={labelStyle}>Year *</label>
+                <input type="text" value={spec.year} onChange={(e) => updateField("year", e.target.value)}
+                  placeholder="e.g. 2024" style={inputStyle} />
+              </div>
+              <div>
+                <label style={labelStyle}>Trim / Engine</label>
+                <input type="text" value={spec.trim} onChange={(e) => updateField("trim", e.target.value)}
+                  placeholder="e.g. SE, 2.5L, AWD" style={inputStyle} />
+              </div>
+            </div>
+          </>
+        ) : (
+          /* ─── Cascading dropdown mode ─── */
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div>
+                <label style={labelStyle}>Make *</label>
+                <select value={ALL_MAKES.includes(spec.make) ? spec.make : ""}
+                  onChange={(e) => handleMakeChange(e.target.value)} style={selectStyle}>
+                  <option value="">Select Make</option>
+                  {ALL_MAKES.map((m) => <option key={m} value={m}>{m}</option>)}
+                  <option value="__manual">— Not listed —</option>
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Model *</label>
+                <select value={models.includes(spec.model) ? spec.model : ""}
+                  onChange={(e) => handleModelChange(e.target.value)}
+                  disabled={!spec.make}
+                  style={spec.make ? selectStyle : disabledSelectStyle}>
+                  <option value="">{spec.make ? "Select Model" : "Select Make first"}</option>
+                  {models.map((m) => <option key={m} value={m}>{m}</option>)}
+                  {spec.make && <option value="__manual">— Not listed —</option>}
+                </select>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+              <div>
+                <label style={labelStyle}>Year *</label>
+                <select value={years.includes(spec.year) ? spec.year : ""}
+                  onChange={(e) => handleYearChange(e.target.value)}
+                  disabled={!spec.model}
+                  style={spec.model ? selectStyle : disabledSelectStyle}>
+                  <option value="">{spec.model ? "Select Year" : "Select Model first"}</option>
+                  {years.map((y) => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={labelStyle}>Trim / Engine</label>
+                <select value={trims.includes(spec.trim) ? spec.trim : ""}
+                  onChange={(e) => handleTrimChange(e.target.value)}
+                  disabled={!spec.year}
+                  style={spec.year ? selectStyle : disabledSelectStyle}>
+                  <option value="">{spec.year ? "Select Trim" : "Select Year first"}</option>
+                  {trims.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+            </div>
+          </>
+        )}
+
         <div>
           <label style={labelStyle}>Notes</label>
           <textarea value={spec.notes} onChange={(e) => updateField("notes", e.target.value)}
