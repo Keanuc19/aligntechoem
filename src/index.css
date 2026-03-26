@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --c-bg: #0f1114;
+  --c-surface: #181b20;
+  --c-surface-raised: #22262d;
+  --c-border: #2a2f38;
+  --c-border-hover: #3d4450;
+  --c-text: #e8e8ed;
+  --c-text-dim: #7a8194;
+  --c-amber: #f0b429;
+  --c-amber-dim: rgba(240,180,41,0.12);
+  --c-green: #34d399;
+  --c-green-dim: rgba(52,211,153,0.12);
+  --c-red: #ef4444;
+  --c-red-dim: rgba(239,68,68,0.1);
+  --c-purple: #8b5cf6;
+  --c-purple-dim: rgba(139,92,246,0.12);
+  --c-input-bg: #1e2128;
+  --c-blue: #3b82f6;
+  --c-blue-dim: rgba(59,130,246,0.12);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --c-bg: #f4f4f6;
+    --c-surface: #ffffff;
+    --c-surface-raised: #edeef1;
+    --c-border: #d4d6dc;
+    --c-border-hover: #b8bcc5;
+    --c-text: #1a1a2e;
+    --c-text-dim: #6b7280;
+    --c-amber: #d99a08;
+    --c-amber-dim: rgba(217,154,8,0.1);
+    --c-green: #059669;
+    --c-green-dim: rgba(5,150,105,0.1);
+    --c-red: #dc2626;
+    --c-red-dim: rgba(220,38,38,0.08);
+    --c-purple: #7c3aed;
+    --c-purple-dim: rgba(124,58,237,0.1);
+    --c-input-bg: #f9fafb;
+    --c-blue: #2563eb;
+    --c-blue-dim: rgba(37,99,235,0.1);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--c-bg);
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--c-amber) !important;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--c-amber-dim);
+}
+
+input[type=number] { -moz-appearance: textfield; }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%237a8194' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 30px !important;
+}
+
+button { font-family: inherit; }
+button:hover { opacity: 0.88; }
+button:active { transform: scale(0.98); }
+
+::placeholder { color: var(--c-text-dim); opacity: 0.5; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
