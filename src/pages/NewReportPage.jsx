@@ -212,7 +212,7 @@ export default function NewReportPage() {
       </div>
 
       {/* Stepper */}
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '28px', flexWrap: 'wrap' }}>
+      <div className="step-bar" style={{ display: 'flex', gap: '4px', marginBottom: '28px', flexWrap: 'wrap' }}>
         {STEPS.map((s, i) => (
           <button key={s.key} onClick={() => { if (i < step) setStep(i) }} style={{
             padding: '8px 16px', borderRadius: '8px', border: 'none', fontSize: '13px', fontWeight: '600',
@@ -229,7 +229,7 @@ export default function NewReportPage() {
       {step === 0 && (
         <div style={sectionStyle}>
           <h2 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 20px' }}>Customer Information</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={labelStyle}>Customer Name *</label>
               <input type="text" value={customerName} onChange={e => setCustomerName(e.target.value)} placeholder="Full name" style={inputStyle} autoFocus />
@@ -250,7 +250,7 @@ export default function NewReportPage() {
       {step === 1 && (
         <div style={sectionStyle}>
           <h2 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 20px' }}>Vehicle Information</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
               <label style={labelStyle}>Year *</label>
               <select value={year} onChange={e => { setYear(e.target.value); setMake(''); setModel(''); setTrim('') }} style={selectStyle}>
@@ -330,7 +330,7 @@ export default function NewReportPage() {
       {step === 4 && (
         <div style={sectionStyle}>
           <h2 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 20px' }}>Review & Save</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+          <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
             <div style={{ background: 'var(--c-surface-raised)', borderRadius: '10px', padding: '16px' }}>
               <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--c-text-dim)', marginBottom: '8px' }}>CUSTOMER</div>
               <div style={{ fontWeight: '600' }}>{customerName}</div>

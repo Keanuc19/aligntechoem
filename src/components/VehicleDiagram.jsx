@@ -529,7 +529,7 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
       </div>
 
       {/* Main layout: diagram center + OEM reference right */}
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+      <div className="diagram-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
         {/* Diagram panel */}
         <div style={{
           flex: 1,
@@ -543,38 +543,53 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
             Vehicle Diagram — Enter Values at Each Corner
           </div>
 
-          {/* ── Front row: FL inputs | chassis top | FR inputs ── */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
-            {/* Front Left inputs */}
-            <div style={{ flexShrink: 0, paddingTop: '35px' }}>
-              <WheelInputs tag="front_left" readings={readings?.front_left} oemSpec={oemSpec}
-                onChange={(f, v) => handleWheelChange('front_left', f, v)} readOnly={readOnly} />
+          {/* ── Desktop layout: inputs flanking the SVG ── */}
+          <div className="diagram-inputs-desktop" style={{ display: 'block' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <div style={{ flexShrink: 0, paddingTop: '35px' }}>
+                <WheelInputs tag="front_left" readings={readings?.front_left} oemSpec={oemSpec}
+                  onChange={(f, v) => handleWheelChange('front_left', f, v)} readOnly={readOnly} />
+              </div>
+              <div className="diagram-svg-wrap" style={{ flexShrink: 0 }}>
+                <ChassisSvg readings={readings} />
+              </div>
+              <div style={{ flexShrink: 0, paddingTop: '35px' }}>
+                <WheelInputs tag="front_right" readings={readings?.front_right} oemSpec={oemSpec}
+                  onChange={(f, v) => handleWheelChange('front_right', f, v)} readOnly={readOnly} />
+              </div>
             </div>
-
-            {/* Chassis SVG centered */}
-            <div style={{ flexShrink: 0 }}>
-              <ChassisSvg readings={readings} />
-            </div>
-
-            {/* Front Right inputs */}
-            <div style={{ flexShrink: 0, paddingTop: '35px' }}>
-              <WheelInputs tag="front_right" readings={readings?.front_right} oemSpec={oemSpec}
-                onChange={(f, v) => handleWheelChange('front_right', f, v)} readOnly={readOnly} />
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '-115px', paddingBottom: '10px' }}>
+              <div style={{ flexShrink: 0 }}>
+                <WheelInputs tag="rear_left" readings={readings?.rear_left} oemSpec={oemSpec}
+                  onChange={(f, v) => handleWheelChange('rear_left', f, v)} readOnly={readOnly} />
+              </div>
+              <div style={{ width: '480px', flexShrink: 0 }} />
+              <div style={{ flexShrink: 0 }}>
+                <WheelInputs tag="rear_right" readings={readings?.rear_right} oemSpec={oemSpec}
+                  onChange={(f, v) => handleWheelChange('rear_right', f, v)} readOnly={readOnly} />
+              </div>
             </div>
           </div>
 
-          {/* ── Rear row: RL inputs | spacer | RR inputs (overlapping bottom of chassis) ── */}
-          <div style={{
-            display: 'flex', justifyContent: 'center',
-            marginTop: '-115px',
-            paddingBottom: '10px',
-          }}>
-            <div style={{ flexShrink: 0 }}>
+          {/* ── Mobile layout: 2x2 grid of wheel inputs (no SVG) ── */}
+          <div className="diagram-inputs-mobile" style={{ display: 'none' }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--c-amber)', marginBottom: '6px' }}>Front Left</div>
+              <WheelInputs tag="front_left" readings={readings?.front_left} oemSpec={oemSpec}
+                onChange={(f, v) => handleWheelChange('front_left', f, v)} readOnly={readOnly} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--c-amber)', marginBottom: '6px' }}>Front Right</div>
+              <WheelInputs tag="front_right" readings={readings?.front_right} oemSpec={oemSpec}
+                onChange={(f, v) => handleWheelChange('front_right', f, v)} readOnly={readOnly} />
+            </div>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--c-amber)', marginBottom: '6px' }}>Rear Left</div>
               <WheelInputs tag="rear_left" readings={readings?.rear_left} oemSpec={oemSpec}
                 onChange={(f, v) => handleWheelChange('rear_left', f, v)} readOnly={readOnly} />
             </div>
-            <div style={{ width: '480px', flexShrink: 0 }} />
-            <div style={{ flexShrink: 0 }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: 'var(--c-amber)', marginBottom: '6px' }}>Rear Right</div>
               <WheelInputs tag="rear_right" readings={readings?.rear_right} oemSpec={oemSpec}
                 onChange={(f, v) => handleWheelChange('rear_right', f, v)} readOnly={readOnly} />
             </div>
@@ -582,7 +597,9 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
         </div>
 
         {/* OEM Reference */}
-        <OemReferencePanel oemSpec={oemSpec} />
+        <div className="oem-panel">
+          <OemReferencePanel oemSpec={oemSpec} />
+        </div>
       </div>
 
       {/* Caster & Thrust Angle */}
@@ -590,7 +607,7 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
         <div style={{ fontSize: '14px', fontWeight: '700', color: 'var(--c-amber)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px' }}>
           Caster & Thrust Angle
         </div>
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        <div className="caster-row" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           <AngleCard label="Left Caster" value={readings?.left_caster || ''}
             onChange={v => handleFieldChange('left_caster', v)}
             spec={getSpecForSummary(oemSpec, 'left_caster')} readOnly={readOnly} />

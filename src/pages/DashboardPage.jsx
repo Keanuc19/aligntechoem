@@ -89,7 +89,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div style={{ display: 'flex', gap: '16px', marginBottom: '32px', flexWrap: 'wrap' }}>
+      <div className="stat-grid" style={{ display: 'flex', gap: '16px', marginBottom: '32px', flexWrap: 'wrap' }}>
         <div style={statCard}>
           <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--c-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Total Reports</div>
           <div style={{ fontSize: '32px', fontWeight: '800', marginTop: '4px' }}>{loading ? '—' : stats.total}</div>

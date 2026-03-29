@@ -148,7 +148,7 @@ export default function ReportViewPage() {
   return (
     <div className="animate-in">
       {/* Toolbar — hidden in print */}
-      <div className="no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+      <div className="no-print report-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <Link to="/reports" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--c-text-dim)', textDecoration: 'none', fontSize: '14px', fontWeight: '600' }}>
           <IconBack /> All Reports
         </Link>
@@ -205,7 +205,7 @@ export default function ReportViewPage() {
         </div>
 
         {/* Info grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+        <div className="report-info-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '20px' }}>
           <div style={{ background: 'var(--c-surface)', border: '1px solid var(--c-border)', borderRadius: '12px', padding: '16px' }}>
             <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--c-text-dim)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Customer</div>
             <div style={{ fontWeight: '600' }}>{c.name}</div>

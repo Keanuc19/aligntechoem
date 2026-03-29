@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ROLES, setRole } from '../utils/roles.js'
 
 const inputStyle = {
   width: '100%',
@@ -14,6 +15,7 @@ const inputStyle = {
 
 export default function LoginPage() {
   const [name, setName] = useState('')
+  const [selectedRole, setSelectedRole] = useState('technician')
   const navigate = useNavigate()
 
   function handleSubmit(e) {
@@ -21,6 +23,7 @@ export default function LoginPage() {
     const trimmed = name.trim()
     if (!trimmed) return
     localStorage.setItem('technicianName', trimmed)
+    setRole(selectedRole)
     navigate('/')
   }
 
@@ -37,12 +40,12 @@ export default function LoginPage() {
         background: 'var(--c-surface)',
         border: '1px solid var(--c-border)',
         borderRadius: '16px',
-        padding: '40px',
+        padding: '32px',
         width: '100%',
         maxWidth: '400px',
       }}>
         {/* Logo */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{
             width: '64px', height: '64px', borderRadius: '16px',
             background: 'var(--c-amber-dim)', color: 'var(--c-amber)',
@@ -55,7 +58,7 @@ export default function LoginPage() {
             AlignSpec
           </h1>
           <p style={{ color: 'var(--c-text-dim)', fontSize: '14px', margin: 0 }}>
-            Technician sign-in
+            Sign in to continue
           </p>
         </div>
 
@@ -71,6 +74,33 @@ export default function LoginPage() {
             autoFocus
             style={inputStyle}
           />
+
+          <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', marginTop: '16px', marginBottom: '8px', color: 'var(--c-text-dim)' }}>
+            Role
+          </label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {Object.entries(ROLES).map(([key, role]) => (
+              <button key={key} type="button" onClick={() => setSelectedRole(key)} style={{
+                display: 'flex', alignItems: 'center', gap: '10px',
+                padding: '10px 14px', borderRadius: '10px',
+                border: selectedRole === key ? `2px solid ${role.color}` : '2px solid var(--c-border)',
+                background: selectedRole === key ? 'var(--c-surface-raised)' : 'transparent',
+                color: 'var(--c-text)', cursor: 'pointer', textAlign: 'left',
+                transition: 'all 0.15s ease',
+              }}>
+                <div style={{
+                  width: '10px', height: '10px', borderRadius: '50%',
+                  background: selectedRole === key ? role.color : 'var(--c-border)',
+                  flexShrink: 0,
+                }} />
+                <div>
+                  <div style={{ fontSize: '14px', fontWeight: '600' }}>{role.label}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--c-text-dim)' }}>{role.description}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+
           <button type="submit" disabled={!name.trim()} style={{
             width: '100%',
             marginTop: '20px',
