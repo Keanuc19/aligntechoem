@@ -103,3 +103,27 @@ button:active { transform: scale(0.98); }
 .pulse {
   animation: pulse 1.5s ease-in-out infinite;
 }
+
+/* Print styles for report download */
+@media print {
+  .no-print { display: none !important; }
+
+  body {
+    background: #fff !important;
+    color: #1a1a2e !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  aside { display: none !important; }
+
+  main {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  #report-content {
+    background: #fff !important;
+    padding: 16px !important;
+  }
+}
