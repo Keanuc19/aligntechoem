@@ -1,0 +1,9 @@
+{
+  "appId": "com.alignspec.app",
+  "appName": "AlignSpec",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "allowNavigation": ["*.supabase.co"]
+  }
+}
