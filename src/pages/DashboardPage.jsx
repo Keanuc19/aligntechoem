@@ -60,31 +60,33 @@ export default function DashboardPage() {
 
   return (
     <div className="animate-in">
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 4px', letterSpacing: '-0.5px' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <h1 className="dash-heading" style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 4px', letterSpacing: '-0.5px' }}>
           Welcome back, {techName}
         </h1>
-        <p style={{ color: 'var(--c-text-dim)', margin: 0, fontSize: '15px' }}>
+        <p style={{ color: 'var(--c-text-dim)', margin: 0, fontSize: '14px' }}>
           {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
 
       {/* Quick Actions */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
-        <Link to="/new-report" style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '16px 28px', background: 'var(--c-amber)', color: '#000',
-          borderRadius: '12px', textDecoration: 'none', fontWeight: '700', fontSize: '15px',
+      <div className="quick-actions" style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        <Link to="/new-report" className="action-btn" style={{
+          display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto',
+          padding: '14px 20px', background: 'var(--c-amber)', color: '#000',
+          borderRadius: '12px', textDecoration: 'none', fontWeight: '700', fontSize: '14px',
+          justifyContent: 'center',
         }}>
-          <IconPlus /> New Alignment Report
+          <IconPlus /> New Report
         </Link>
-        <Link to="/reports" style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          padding: '16px 28px', background: 'var(--c-surface)', color: 'var(--c-text)',
+        <Link to="/reports" className="action-btn" style={{
+          display: 'flex', alignItems: 'center', gap: '8px', flex: '1 1 auto',
+          padding: '14px 20px', background: 'var(--c-surface)', color: 'var(--c-text)',
           border: '1px solid var(--c-border)', borderRadius: '12px',
-          textDecoration: 'none', fontWeight: '600', fontSize: '15px',
+          textDecoration: 'none', fontWeight: '600', fontSize: '14px',
+          justifyContent: 'center',
         }}>
-          <IconReport /> View All Reports
+          <IconReport /> All Reports
         </Link>
       </div>
 
@@ -125,23 +127,24 @@ export default function DashboardPage() {
             {recentReports.map(report => (
               <Link key={report.id} to={`/reports/${report.id}`} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '14px 20px', borderBottom: '1px solid var(--c-border)',
+                gap: '8px',
+                padding: '12px 14px', borderBottom: '1px solid var(--c-border)',
                 textDecoration: 'none', color: 'var(--c-text)',
               }}>
-                <div>
-                  <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: '600', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {report.vehicles?.year} {report.vehicles?.make} {report.vehicles?.model}
                   </div>
-                  <div style={{ fontSize: '13px', color: 'var(--c-text-dim)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--c-text-dim)', marginTop: '2px' }}>
                     {report.customers?.name} · {new Date(report.created_at).toLocaleDateString()}
                   </div>
                 </div>
                 <span style={{
-                  padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: '600',
+                  padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', flexShrink: 0, whiteSpace: 'nowrap',
                   background: report.status === 'completed' ? 'var(--c-green-dim)' : 'var(--c-amber-dim)',
                   color: report.status === 'completed' ? 'var(--c-green)' : 'var(--c-amber)',
                 }}>
-                  {report.status === 'completed' ? 'Completed' : 'In Progress'}
+                  {report.status === 'completed' ? 'Done' : 'Active'}
                 </span>
               </Link>
             ))}

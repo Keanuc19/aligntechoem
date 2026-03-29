@@ -179,47 +179,78 @@ function MeasurementVisual({ title, readings, oemSpec }) {
     <div style={{ background: R.card, border: `1px solid ${R.border}`, borderRadius: '10px', padding: '16px', marginBottom: '12px' }}>
       <h3 style={{ fontSize: '13px', fontWeight: '700', margin: '0 0 12px', color: R.text, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{title}</h3>
 
-      {/* Front axle row: Left Front | Diagram top + center data | Right Front */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: '0' }}>
-        {/* Left Front */}
-        <div style={{ flex: '1 1 0', minWidth: '120px' }}>
-          <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Front</div>
-          <ReadingBlock label="Camber" value={fl.camber} spec={fCamberSpec} />
-          <ReadingBlock label="Caster" value={readings?.left_caster} spec={casterSpec} />
-          <ReadingBlock label="Toe" value={fl.toe} spec={fToeSpec} />
+      {/* ── Desktop: 3-column with diagram (hidden on mobile via CSS) ── */}
+      <div className="report-visual-desktop">
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+          <div style={{ flex: '1 1 0', minWidth: '120px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Front</div>
+            <ReadingBlock label="Camber" value={fl.camber} spec={fCamberSpec} />
+            <ReadingBlock label="Caster" value={readings?.left_caster} spec={casterSpec} />
+            <ReadingBlock label="Toe" value={fl.toe} spec={fToeSpec} />
+          </div>
+          <div style={{ flex: '0 0 160px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <CenterBadge label="Total Toe" value={frontTotalToe} spec={fTotalSpec} />
+            <CenterBadge label="Steer Ahead" value={readings?.steer_ahead} spec={steerSpec} />
+            <SuspensionSvg />
+            <CenterBadge label="Total Toe" value={rearTotalToe} spec={rTotalSpec} />
+            <CenterBadge label="Thrust Angle" value={readings?.thrust_angle} spec={thrustSpec} />
+          </div>
+          <div style={{ flex: '1 1 0', minWidth: '120px', textAlign: 'right' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Front</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <ReadingBlock label="Camber" value={fr.camber} spec={fCamberSpec} />
+              <ReadingBlock label="Caster" value={readings?.right_caster} spec={casterSpec} />
+              <ReadingBlock label="Toe" value={fr.toe} spec={fToeSpec} />
+            </div>
+          </div>
         </div>
-
-        {/* Center: suspension diagram + front center data */}
-        <div style={{ flex: '0 0 160px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <CenterBadge label="Total Toe" value={frontTotalToe} spec={fTotalSpec} />
-          <CenterBadge label="Steer Ahead" value={readings?.steer_ahead} spec={steerSpec} />
-          <SuspensionSvg />
-          <CenterBadge label="Total Toe" value={rearTotalToe} spec={rTotalSpec} />
-          <CenterBadge label="Thrust Angle" value={readings?.thrust_angle} spec={thrustSpec} />
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', marginTop: '-80px' }}>
+          <div style={{ flex: '1 1 0', minWidth: '120px' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Rear</div>
+            <ReadingBlock label="Camber" value={rl.camber} spec={rCamberSpec} />
+            <ReadingBlock label="Toe" value={rl.toe} spec={rToeSpec} />
+          </div>
+          <div style={{ flex: '0 0 160px' }} />
+          <div style={{ flex: '1 1 0', minWidth: '120px', textAlign: 'right' }}>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Rear</div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+              <ReadingBlock label="Camber" value={rr.camber} spec={rCamberSpec} />
+              <ReadingBlock label="Toe" value={rr.toe} spec={rToeSpec} />
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Right Front */}
-        <div style={{ flex: '1 1 0', minWidth: '120px', textAlign: 'right' }}>
-          <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Front</div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+      {/* ── Mobile: stacked 2x2 grid + center badges (hidden on desktop via CSS) ── */}
+      <div className="report-visual-mobile">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Front</div>
+            <ReadingBlock label="Camber" value={fl.camber} spec={fCamberSpec} />
+            <ReadingBlock label="Caster" value={readings?.left_caster} spec={casterSpec} />
+            <ReadingBlock label="Toe" value={fl.toe} spec={fToeSpec} />
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Front</div>
             <ReadingBlock label="Camber" value={fr.camber} spec={fCamberSpec} />
             <ReadingBlock label="Caster" value={readings?.right_caster} spec={casterSpec} />
             <ReadingBlock label="Toe" value={fr.toe} spec={fToeSpec} />
           </div>
         </div>
-      </div>
-
-      {/* Rear axle row: Left Rear | spacer | Right Rear — overlaps with diagram */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', marginTop: '-80px' }}>
-        <div style={{ flex: '1 1 0', minWidth: '120px' }}>
-          <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Rear</div>
-          <ReadingBlock label="Camber" value={rl.camber} spec={rCamberSpec} />
-          <ReadingBlock label="Toe" value={rl.toe} spec={rToeSpec} />
+        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap', margin: '10px 0', padding: '8px 0', borderTop: `1px solid ${R.border}`, borderBottom: `1px solid ${R.border}` }}>
+          <CenterBadge label="Front Total Toe" value={frontTotalToe} spec={fTotalSpec} />
+          <CenterBadge label="Steer Ahead" value={readings?.steer_ahead} spec={steerSpec} />
+          <CenterBadge label="Rear Total Toe" value={rearTotalToe} spec={rTotalSpec} />
+          <CenterBadge label="Thrust Angle" value={readings?.thrust_angle} spec={thrustSpec} />
         </div>
-        <div style={{ flex: '0 0 160px' }} />
-        <div style={{ flex: '1 1 0', minWidth: '120px', textAlign: 'right' }}>
-          <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Rear</div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Left Rear</div>
+            <ReadingBlock label="Camber" value={rl.camber} spec={rCamberSpec} />
+            <ReadingBlock label="Toe" value={rl.toe} spec={rToeSpec} />
+          </div>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: R.text, marginBottom: '6px' }}>Right Rear</div>
             <ReadingBlock label="Camber" value={rr.camber} spec={rCamberSpec} />
             <ReadingBlock label="Toe" value={rr.toe} spec={rToeSpec} />
           </div>

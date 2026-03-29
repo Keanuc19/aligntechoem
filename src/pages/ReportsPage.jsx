@@ -63,14 +63,14 @@ export default function ReportsPage() {
       </div>
 
       {/* Toolbar */}
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ position: 'relative' }}>
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <div style={{ position: 'relative', flex: '1 1 200px' }}>
           <div style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--c-text-dim)' }}>
             <IconSearch />
           </div>
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by customer, vehicle, VIN..." style={inputStyle} />
+          <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..." style={{ ...inputStyle, maxWidth: 'none', width: '100%' }} />
         </div>
-        <div style={{ display: 'flex', gap: '4px' }}>
+        <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
           {[
             { key: 'all', label: 'All' },
             { key: 'completed', label: 'Completed' },
@@ -107,27 +107,24 @@ export default function ReportsPage() {
           filtered.map(report => (
             <Link key={report.id} to={`/reports/${report.id}`} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '16px 20px', borderBottom: '1px solid var(--c-border)',
-              textDecoration: 'none', color: 'var(--c-text)', transition: 'background 0.1s',
+              gap: '8px',
+              padding: '12px 14px', borderBottom: '1px solid var(--c-border)',
+              textDecoration: 'none', color: 'var(--c-text)',
             }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: '600', fontSize: '15px' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: '600', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {report.vehicles?.year} {report.vehicles?.make} {report.vehicles?.model}
-                  {report.vehicles?.trim && <span style={{ color: 'var(--c-text-dim)', fontWeight: '400' }}> — {report.vehicles.trim}</span>}
                 </div>
-                <div style={{ fontSize: '13px', color: 'var(--c-text-dim)', marginTop: '3px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                  <span>{report.customers?.name}</span>
-                  {report.vehicles?.license_plate && <span>Plate: {report.vehicles.license_plate}</span>}
-                  <span>Tech: {report.technician_name}</span>
-                  <span>{new Date(report.created_at).toLocaleDateString()} {new Date(report.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                <div style={{ fontSize: '12px', color: 'var(--c-text-dim)', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {report.customers?.name} · {report.technician_name} · {new Date(report.created_at).toLocaleDateString()}
                 </div>
               </div>
               <span style={{
-                padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '600', flexShrink: 0,
+                padding: '3px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', flexShrink: 0, whiteSpace: 'nowrap',
                 background: report.status === 'completed' ? 'var(--c-green-dim)' : 'var(--c-amber-dim)',
                 color: report.status === 'completed' ? 'var(--c-green)' : 'var(--c-amber)',
               }}>
-                {report.status === 'completed' ? 'Completed' : 'In Progress'}
+                {report.status === 'completed' ? 'Done' : 'Active'}
               </span>
             </Link>
           ))

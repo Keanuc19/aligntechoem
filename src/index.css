@@ -100,6 +100,10 @@ button:active { transform: scale(0.98); }
 .animate-in { animation: fadeIn 0.25s ease-out; }
 .pulse { animation: pulse 1.5s ease-in-out infinite; }
 
+/* Report visual layouts: desktop shows 3-col with diagram, mobile stacks */
+.report-visual-desktop { display: block; }
+.report-visual-mobile { display: none; }
+
 /* ════════════════════════════════════════
    App shell — sidebar + main
    ════════════════════════════════════════ */
@@ -232,9 +236,15 @@ button:active { transform: scale(0.98); }
     max-width: 100%;
   }
 
+  /* Dashboard heading */
+  .dash-heading {
+    font-size: 22px !important;
+  }
+
   /* Stack stat cards */
   .stat-grid {
     flex-direction: column !important;
+    gap: 10px !important;
   }
 
   /* Vehicle diagram: hide the SVG on very small screens, stack inputs */
@@ -266,6 +276,16 @@ button:active { transform: scale(0.98); }
   /* Report info grid → 1 col */
   .report-info-grid {
     grid-template-columns: 1fr !important;
+
+  }
+
+  /* Report visual: show mobile layout, hide desktop */
+  .report-visual-desktop {
+    display: none !important;
+  }
+
+  .report-visual-mobile {
+    display: block !important;
   }
 
   /* Form grids → 1 col */
