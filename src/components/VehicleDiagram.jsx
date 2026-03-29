@@ -617,6 +617,9 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
           <AngleCard label="Thrust Angle" value={readings?.thrust_angle || ''}
             onChange={v => handleFieldChange('thrust_angle', v)}
             spec={getSpecForSummary(oemSpec, 'thrust_angle')} readOnly={readOnly} />
+          <AngleCard label="Steer Ahead" value={readings?.steer_ahead || ''}
+            onChange={v => handleFieldChange('steer_ahead', v)}
+            spec={getSpecForSummary(oemSpec, 'steer_ahead')} readOnly={readOnly} />
         </div>
       </div>
     </div>

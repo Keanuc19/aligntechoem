@@ -65,6 +65,7 @@ export function emptyReadings() {
     left_caster: '',
     right_caster: '',
     thrust_angle: '',
+    steer_ahead: '',
     front_total_toe: '',
     rear_total_toe: '',
   }
@@ -98,6 +99,7 @@ export function getSpecForSummary(oemSpec, measurement) {
     case 'right_caster':
       return oemSpec.front?.caster || null
     case 'thrust_angle': return oemSpec.thrustAngle || null
+    case 'steer_ahead': return oemSpec.steerAheadAngle || null
     case 'front_total_toe': return oemSpec.front?.totalToe || null
     case 'rear_total_toe': return oemSpec.rear?.totalToe || null
     default: return null
