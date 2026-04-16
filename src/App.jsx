@@ -449,10 +449,15 @@ export default function App() {
 
         let count = 0;
         for (let i = 1; i < lines.length; i++) {
-          // Handle quoted CSV fields
-          const cells = lines[i].match(/(".*?"|[^",]+|(?<=,)(?=,))/g)?.map((c) =>
-            c.replace(/^"|"$/g, "").trim()
-          ) || lines[i].split(",").map((c) => c.trim());
+          // Split CSV row, handling quoted fields
+          const cells = [];
+          let current = "", inQuotes = false;
+          for (const ch of lines[i]) {
+            if (ch === '"') { inQuotes = !inQuotes; continue; }
+            if (ch === ',' && !inQuotes) { cells.push(current.trim()); current = ""; continue; }
+            current += ch;
+          }
+          cells.push(current.trim());
 
           const year = getVal(cells, "year");
           const make = getVal(cells, "make");

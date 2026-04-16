@@ -52,16 +52,10 @@ const trainingModules = [
 ]
 
 export default function HelpPage() {
-  const [ticketForm, setTicketForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const techName = localStorage.getItem('technicianName') || ''
+  const [ticketForm, setTicketForm] = useState({ name: techName, email: '', subject: '', message: '' })
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
-
-  const techName = localStorage.getItem('technicianName') || ''
-
-  // Pre-fill name from session
-  if (!ticketForm.name && techName) {
-    setTicketForm(prev => ({ ...prev, name: techName }))
-  }
 
   const handleTicketSubmit = async (e) => {
     e.preventDefault()
