@@ -5,22 +5,22 @@ export const ROLES = {
     label: 'Technician',
     description: 'Create and view alignment reports',
     color: 'var(--c-green)',
-    routes: ['/', '/new-report', '/reports'],
-    navItems: ['dashboard', 'new-report', 'reports'],
+    routes: ['/', '/new-report', '/reports', '/calibration', '/help'],
+    navItems: ['dashboard', 'new-report', 'reports', 'calibration', 'help'],
   },
   admin: {
     label: 'Admin',
     description: 'Full access to all features',
     color: 'var(--c-amber)',
-    routes: ['/', '/new-report', '/reports', '/specs'],
-    navItems: ['dashboard', 'new-report', 'reports', 'specs'],
+    routes: ['/', '/new-report', '/reports', '/specs', '/calibration', '/help'],
+    navItems: ['dashboard', 'new-report', 'reports', 'specs', 'calibration', 'help'],
   },
   manager: {
     label: 'Manager',
     description: 'View reports and manage specs',
     color: 'var(--c-purple)',
-    routes: ['/', '/reports', '/specs'],
-    navItems: ['dashboard', 'reports', 'specs'],
+    routes: ['/', '/reports', '/specs', '/calibration', '/help'],
+    navItems: ['dashboard', 'reports', 'specs', 'calibration', 'help'],
   },
 }
 

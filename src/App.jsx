@@ -272,6 +272,7 @@ export default function App() {
   const [saving, setSaving] = useState(false);
   const [connected, setConnected] = useState(true);
   const fileInputRef = useRef(null);
+  const csvInputRef = useRef(null);
 
   const showToast = useCallback((msg, type = "success") => {
     setToast({ message: msg, visible: true, type });
@@ -413,6 +414,147 @@ export default function App() {
     e.target.value = "";
   };
 
+  // ─── CSV Import ───
+  // Expected CSV columns: year,make,model,trim,notes,
+  //   front_camber_pref,front_camber_min,front_camber_max,
+  //   front_caster_pref,front_caster_min,front_caster_max,
+  //   front_total_toe_pref,front_total_toe_min,front_total_toe_max,
+  //   front_ind_toe_pref,front_ind_toe_min,front_ind_toe_max,
+  //   rear_camber_pref,rear_camber_min,rear_camber_max,
+  //   rear_total_toe_pref,rear_total_toe_min,rear_total_toe_max,
+  //   rear_ind_toe_pref,rear_ind_toe_min,rear_ind_toe_max,
+  //   thrust_angle_pref,thrust_angle_min,thrust_angle_max
+  const handleCsvImport = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const text = ev.target.result;
+        const lines = text.split(/\r?\n/).filter((l) => l.trim());
+        if (lines.length < 2) throw new Error("CSV must have a header row and at least one data row");
+
+        const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+
+        // Map header names to indices
+        const col = (name) => {
+          const idx = headers.indexOf(name);
+          return idx;
+        };
+
+        const getVal = (cells, headerName) => {
+          const idx = col(headerName);
+          return idx >= 0 && idx < cells.length ? cells[idx].trim() : "";
+        };
+
+        let count = 0;
+        for (let i = 1; i < lines.length; i++) {
+          // Handle quoted CSV fields
+          const cells = lines[i].match(/(".*?"|[^",]+|(?<=,)(?=,))/g)?.map((c) =>
+            c.replace(/^"|"$/g, "").trim()
+          ) || lines[i].split(",").map((c) => c.trim());
+
+          const year = getVal(cells, "year");
+          const make = getVal(cells, "make");
+          const model = getVal(cells, "model");
+          if (!year || !make || !model) continue;
+
+          const specData = {
+            front: {
+              camber: {
+                preferred: getVal(cells, "front_camber_pref"),
+                min: getVal(cells, "front_camber_min"),
+                max: getVal(cells, "front_camber_max"),
+              },
+              caster: {
+                preferred: getVal(cells, "front_caster_pref"),
+                min: getVal(cells, "front_caster_min"),
+                max: getVal(cells, "front_caster_max"),
+              },
+              totalToe: {
+                preferred: getVal(cells, "front_total_toe_pref"),
+                min: getVal(cells, "front_total_toe_min"),
+                max: getVal(cells, "front_total_toe_max"),
+              },
+              individualToe: {
+                preferred: getVal(cells, "front_ind_toe_pref"),
+                min: getVal(cells, "front_ind_toe_min"),
+                max: getVal(cells, "front_ind_toe_max"),
+              },
+            },
+            rear: {
+              camber: {
+                preferred: getVal(cells, "rear_camber_pref"),
+                min: getVal(cells, "rear_camber_min"),
+                max: getVal(cells, "rear_camber_max"),
+              },
+              totalToe: {
+                preferred: getVal(cells, "rear_total_toe_pref"),
+                min: getVal(cells, "rear_total_toe_min"),
+                max: getVal(cells, "rear_total_toe_max"),
+              },
+              individualToe: {
+                preferred: getVal(cells, "rear_ind_toe_pref"),
+                min: getVal(cells, "rear_ind_toe_min"),
+                max: getVal(cells, "rear_ind_toe_max"),
+              },
+            },
+            thrustAngle: {
+              preferred: getVal(cells, "thrust_angle_pref"),
+              min: getVal(cells, "thrust_angle_min"),
+              max: getVal(cells, "thrust_angle_max"),
+            },
+            steerAheadAngle: { preferred: "", min: "", max: "" },
+            maxSteeringAngle: { left: "", right: "" },
+            setbackAngle: { preferred: "", min: "", max: "" },
+          };
+
+          await upsertSpec({
+            id: null,
+            year,
+            make,
+            model,
+            trim: getVal(cells, "trim"),
+            notes: getVal(cells, "notes"),
+            spec_data: specData,
+            created_by: techName,
+          });
+          count++;
+        }
+        await loadSpecs();
+        showToast(`Imported ${count} specs from CSV`);
+      } catch (err) {
+        console.error("CSV import error:", err);
+        showToast("CSV import failed — check file format", "error");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  };
+
+  const handleExportCsvTemplate = () => {
+    const headers = [
+      "year", "make", "model", "trim", "notes",
+      "front_camber_pref", "front_camber_min", "front_camber_max",
+      "front_caster_pref", "front_caster_min", "front_caster_max",
+      "front_total_toe_pref", "front_total_toe_min", "front_total_toe_max",
+      "front_ind_toe_pref", "front_ind_toe_min", "front_ind_toe_max",
+      "rear_camber_pref", "rear_camber_min", "rear_camber_max",
+      "rear_total_toe_pref", "rear_total_toe_min", "rear_total_toe_max",
+      "rear_ind_toe_pref", "rear_ind_toe_min", "rear_ind_toe_max",
+      "thrust_angle_pref", "thrust_angle_min", "thrust_angle_max",
+    ].join(",");
+    const sample = "2024,Toyota,Camry,SE,,-0.75,-1.50,0.00,3.50,2.50,4.50,0.10,-0.10,0.30,0.05,-0.05,0.15,-0.75,-1.50,0.00,0.20,0.00,0.40,0.10,0.00,0.20,0.00,-0.20,0.20";
+    const blob = new Blob([headers + "\n" + sample + "\n"], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "alignment-specs-template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("CSV template downloaded");
+  };
+
   // Filters
   const filtered = specs.filter((s) => {
     const q = search.toLowerCase();
@@ -535,6 +677,12 @@ export default function App() {
             <button onClick={() => fileInputRef.current?.click()} style={{ ...btnSecondary, padding: "8px 12px", fontSize: "12px" }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import JSON
             </button>
+            <button onClick={() => csvInputRef.current?.click()} style={{ ...btnSecondary, padding: "8px 12px", fontSize: "12px" }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import CSV
+            </button>
+            <button onClick={handleExportCsvTemplate} style={{ ...btnSecondary, padding: "8px 12px", fontSize: "12px" }}>
+              <IconExport /> CSV Template
+            </button>
             <button onClick={() => { localStorage.removeItem("alignspec_tech_name"); setTechName(""); }}
               style={{ ...btnSecondary, padding: "8px 12px", fontSize: "12px", marginLeft: "auto" }}>
               Switch User
@@ -617,6 +765,7 @@ export default function App() {
       )}
 
       <input ref={fileInputRef} type="file" accept=".json" onChange={handleImport} style={{ display: "none" }} />
+      <input ref={csvInputRef} type="file" accept=".csv" onChange={handleCsvImport} style={{ display: "none" }} />
       <Toast message={toast.message} visible={toast.visible} type={toast.type} />
     </div>
   );

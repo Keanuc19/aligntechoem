@@ -8,6 +8,8 @@ import DashboardPage from './pages/DashboardPage.jsx'
 import NewReportPage from './pages/NewReportPage.jsx'
 import ReportsPage from './pages/ReportsPage.jsx'
 import ReportViewPage from './pages/ReportViewPage.jsx'
+import HelpPage from './pages/HelpPage.jsx'
+import CalibrationPage from './pages/CalibrationPage.jsx'
 import { canAccessRoute } from './utils/roles.js'
 import './index.css'
 
@@ -36,6 +38,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="new-report" element={<RoleGate><NewReportPage /></RoleGate>} />
           <Route path="reports" element={<RoleGate><ReportsPage /></RoleGate>} />
           <Route path="reports/:id" element={<RoleGate><ReportViewPage /></RoleGate>} />
+          <Route path="calibration" element={<CalibrationPage />} />
+          <Route path="help" element={<HelpPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -514,7 +514,7 @@ export default function VehicleDiagram({ readings, oemSpec, onChange, readOnly =
       <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
         {[
           { count: counts.green, label: 'In Spec', color: 'var(--c-green)', bg: 'var(--c-green-dim)' },
-          { count: counts.yellow, label: 'Warning', color: 'var(--c-amber)', bg: 'var(--c-amber-dim)' },
+          { count: counts.orange, label: 'Minor Adj.', color: 'var(--c-amber)', bg: 'var(--c-amber-dim)' },
           { count: counts.red, label: 'Critical', color: 'var(--c-red)', bg: 'var(--c-red-dim)' },
         ].map(b => (
           <div key={b.label} style={{

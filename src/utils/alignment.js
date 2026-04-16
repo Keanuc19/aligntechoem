@@ -1,11 +1,16 @@
 // ─── Alignment color coding and helper utilities ───
 
 /**
- * Determines the color status of an alignment reading vs OEM spec.
- * - 'green'  → value matches the preferred spec (within tolerance)
- * - 'yellow' → value is within min/max range but not at preferred
- * - 'red'    → value is outside min/max range
- * - 'neutral'→ missing data, can't evaluate
+ * Determines the color status of an alignment reading vs OEM spec
+ * using a fixed-percentage variance model (per Aligntech spec):
+ *
+ * - 'green'   → Within the OEM-defined Min/Max range (in-spec)
+ * - 'orange'  → Within a 5% variance outside the OEM range (minor adjustment)
+ * - 'red'     → Beyond the 5% variance threshold (critical)
+ * - 'neutral' → Missing data, can't evaluate
+ *
+ * The 5% variance is calculated from the full OEM range span (max - min).
+ * For very small ranges (< 0.1°), a fixed 0.05° tolerance is used instead.
  */
 export function getReadingStatus(value, spec) {
   if (!spec || value === '' || value === null || value === undefined) return 'neutral'
@@ -15,18 +20,21 @@ export function getReadingStatus(value, spec) {
 
   const min = parseFloat(spec.min)
   const max = parseFloat(spec.max)
-  const pref = parseFloat(spec.preferred)
 
   if (isNaN(min) || isNaN(max)) return 'neutral'
 
-  // Outside min/max range → red
-  if (v < min || v > max) return 'red'
+  // Within OEM Min/Max range → green (in-spec)
+  if (v >= min && v <= max) return 'green'
 
-  // At or very close to preferred → green
-  if (!isNaN(pref) && Math.abs(v - pref) <= 0.05) return 'green'
+  // Calculate the 5% variance band outside the OEM range
+  const range = Math.abs(max - min)
+  const variance = range >= 0.1 ? range * 0.05 : 0.05
 
-  // Within range but not at preferred → yellow
-  return 'yellow'
+  // Within 5% variance outside range → orange (minor adjustment needed)
+  if (v >= min - variance && v <= max + variance) return 'orange'
+
+  // Beyond 5% variance → red (critical)
+  return 'red'
 }
 
 /**
@@ -34,7 +42,7 @@ export function getReadingStatus(value, spec) {
  */
 export const statusColors = {
   green: { bg: 'var(--c-green-dim)', border: 'var(--c-green)', text: 'var(--c-green)' },
-  yellow: { bg: 'var(--c-amber-dim)', border: 'var(--c-amber)', text: 'var(--c-amber)' },
+  orange: { bg: 'var(--c-amber-dim)', border: 'var(--c-amber)', text: 'var(--c-amber)' },
   red: { bg: 'var(--c-red-dim)', border: 'var(--c-red)', text: 'var(--c-red)' },
   neutral: { bg: 'var(--c-input-bg)', border: 'var(--c-border)', text: 'var(--c-text)' },
 }
@@ -110,7 +118,7 @@ export function getSpecForSummary(oemSpec, measurement) {
  * Counts reading statuses across all fields for status badges
  */
 export function countStatuses(readings, oemSpec) {
-  const counts = { green: 0, yellow: 0, red: 0 }
+  const counts = { green: 0, orange: 0, red: 0 }
   if (!readings || !oemSpec) return counts
 
   const wheels = ['front_left', 'front_right', 'rear_left', 'rear_right']

@@ -30,7 +30,7 @@ const R = {
 function statusColor(value, spec) {
   const s = getReadingStatus(value, spec)
   if (s === 'green') return { bg: R.greenBg, border: R.green, text: R.green }
-  if (s === 'yellow') return { bg: R.amberBg, border: R.amber, text: R.amber }
+  if (s === 'orange') return { bg: R.amberBg, border: R.amber, text: R.amber }
   if (s === 'red') return { bg: R.redBg, border: R.red, text: R.red }
   return { bg: '#f0f0f0', border: '#ccc', text: R.dim }
 }
